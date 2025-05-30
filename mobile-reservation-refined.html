@@ -1,0 +1,300 @@
+<\!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#3B82F6">
+    <title>面会予約システム - Refined</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-dark: #2563EB;
+            --success: #10B981;
+            --error: #EF4444;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-700: #374151;
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            min-height: 100vh;
+            color: var(--gray-700);
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            color: white;
+            padding: 24px 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            margin: 8px 0 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .container {
+            padding: 24px 20px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        
+        .form-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 32px 24px;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .required {
+            color: var(--error);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+        
+        .time-slot {
+            padding: 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+        
+        .time-slot:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .time-slot.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .success-message, .error-message {
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+        
+        .info-card {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            color: var(--primary-dark);
+        }
+        
+        @media (max-width: 480px) {
+            .time-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>面会予約システム</h1>
+        <p>安全・簡単・24時間対応</p>
+    </div>
+    
+    <div class="container">
+        <div class="info-card">
+            <strong>📅 予約について</strong><br>
+            翌日の面会予約を受け付けています。<br>
+            お急ぎの場合は直接お電話でお問い合わせください。
+        </div>
+        
+        <div class="form-card">
+            <form id="reservationForm">
+                <div class="form-group">
+                    <label for="userName">利用者名<span class="required">*</span></label>
+                    <input type="text" id="userName" name="userName" required placeholder="例：山田 太郎">
+                </div>
+                
+                <div class="form-group">
+                    <label for="visitorName">面会者名<span class="required">*</span></label>
+                    <input type="text" id="visitorName" name="visitorName" required placeholder="例：山田 花子">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">連絡先電話番号<span class="required">*</span></label>
+                    <input type="tel" id="phone" name="phone" required placeholder="例：090-1234-5678">
+                </div>
+                
+                <div class="form-group">
+                    <label for="date">面会希望日<span class="required">*</span></label>
+                    <input type="date" id="date" name="date" required readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label>面会時間帯<span class="required">*</span></label>
+                    <div class="time-grid">
+                        <div class="time-slot" data-time="10:00">
+                            <div>午前</div>
+                            <div style="font-size: 12px;">10:00-11:00</div>
+                        </div>
+                        <div class="time-slot" data-time="14:00">
+                            <div>午後</div>
+                            <div style="font-size: 12px;">14:00-16:00</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="selectedTime" name="selectedTime" required>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    <span class="btn-text">予約を申し込む</span>
+                </button>
+            </form>
+            
+            <div id="message"></div>
+        </div>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const dateString = tomorrow.toISOString().split('T')[0];
+        document.getElementById('date').value = dateString;
+        
+        const timeSlots = document.querySelectorAll('.time-slot');
+        const selectedTimeInput = document.getElementById('selectedTime');
+        
+        timeSlots.forEach(slot => {
+            slot.addEventListener('click', function() {
+                timeSlots.forEach(s => s.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedTimeInput.value = this.dataset.time;
+            });
+        });
+        
+        document.getElementById('reservationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.querySelector('.submit-btn');
+            const btnText = document.querySelector('.btn-text');
+            const messageDiv = document.getElementById('message');
+            
+            submitBtn.disabled = true;
+            btnText.textContent = '送信中...';
+            
+            try {
+                const formData = new FormData(this);
+                const reservation = {
+                    userName: formData.get('userName'),
+                    visitorName: formData.get('visitorName'),
+                    phone: formData.get('phone'),
+                    date: formData.get('date'),
+                    time: formData.get('selectedTime')
+                };
+                
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                messageDiv.innerHTML = '<div class="success-message">✅ 予約が正常に申し込まれました<br><strong>' + reservation.userName + '様</strong>の面会予約<br>日時: ' + reservation.date + ' ' + reservation.time + '〜<br>確認のため後日ご連絡いたします。</div>';
+                
+                this.reset();
+                timeSlots.forEach(s => s.classList.remove('selected'));
+                selectedTimeInput.value = '';
+                document.getElementById('date').value = dateString;
+                
+            } catch (error) {
+                messageDiv.innerHTML = '<div class="error-message">❌ 予約の申し込みに失敗しました<br>しばらく時間をおいて再度お試しください。</div>';
+            } finally {
+                submitBtn.disabled = false;
+                btnText.textContent = '予約を申し込む';
+            }
+        });
+    });
+    </script>
+</body>
+</html>
