@@ -1,0 +1,538 @@
+<\!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人狼ゲーム</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        
+        .setup-phase, .game-phase, .night-phase {
+            display: none;
+        }
+        
+        .setup-phase.active, .game-phase.active, .night-phase.active {
+            display: block;
+        }
+        
+        .player-input {
+            margin: 20px 0;
+        }
+        
+        .player-input input {
+            padding: 12px;
+            margin: 5px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 200px;
+        }
+        
+        .player-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .player-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .player-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .player-card.dead {
+            background: #ffebee;
+            border-color: #ef5350;
+            opacity: 0.7;
+        }
+        
+        .player-card.selected {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+        
+        .role-display {
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .game-status {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #e9ecef;
+        }
+        
+        .vote-area {
+            margin: 20px 0;
+        }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 15px 0;
+        }
+        
+        .message-log {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+            margin: 20px 0;
+        }
+        
+        .message {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 6px;
+        }
+        
+        .message.system {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .message.death {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        
+        .role-werewolf { color: #d32f2f; }
+        .role-seer { color: #1976d2; }
+        .role-knight { color: #388e3c; }
+        .role-citizen { color: #424242; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🐺 人狼ゲーム 🌙</h1>
+        
+        <\!-- セットアップフェーズ -->
+        <div class="setup-phase active" id="setupPhase">
+            <h2>ゲーム設定</h2>
+            <div class="player-input">
+                <label>プレイヤー数: </label>
+                <select id="playerCount">
+                    <option value="4">4人</option>
+                    <option value="5">5人</option>
+                    <option value="6" selected>6人</option>
+                    <option value="7">7人</option>
+                    <option value="8">8人</option>
+                    <option value="9">9人</option>
+                    <option value="10">10人</option>
+                </select>
+            </div>
+            <div id="playerNameInputs"></div>
+            <button class="btn" onclick="startGame()">ゲーム開始</button>
+        </div>
+        
+        <\!-- ゲームフェーズ -->
+        <div class="game-phase" id="gamePhase">
+            <div class="game-status">
+                <h2 id="phaseTitle">昼の時間</h2>
+                <div class="timer" id="timer"></div>
+                <div id="gameInfo"></div>
+            </div>
+            
+            <div class="player-list" id="playerList"></div>
+            
+            <div class="vote-area" id="voteArea">
+                <h3>投票</h3>
+                <p>処刑したいプレイヤーを選んでください</p>
+                <button class="btn" id="voteBtn" onclick="castVote()" disabled>投票する</button>
+            </div>
+            
+            <div class="message-log" id="messageLog"></div>
+            
+            <button class="btn" onclick="proceedToNight()" id="proceedBtn" style="display: none;">夜に進む</button>
+        </div>
+        
+        <\!-- 夜フェーズ -->
+        <div class="night-phase" id="nightPhase">
+            <h2>🌙 夜の時間</h2>
+            <div class="game-status">
+                <div id="nightActions"></div>
+            </div>
+            <div class="player-list" id="nightPlayerList"></div>
+            <button class="btn" onclick="executeNightActions()" id="nightBtn" disabled>夜の行動を実行</button>
+        </div>
+    </div>
+
+    <script>
+        let players = [];
+        let gameState = {
+            phase: 'setup', // setup, day, night, end
+            day: 1,
+            selectedPlayer: null,
+            votes: {},
+            nightActions: {},
+            gameEnded: false
+        };
+        
+        const roles = {
+            werewolf: { name: '人狼', color: 'role-werewolf', emoji: '🐺' },
+            seer: { name: '占い師', color: 'role-seer', emoji: '🔮' },
+            knight: { name: '騎士', color: 'role-knight', emoji: '🛡️' },
+            citizen: { name: '市民', color: 'role-citizen', emoji: '👤' }
+        };
+        
+        function generatePlayerInputs() {
+            const count = document.getElementById('playerCount').value;
+            const container = document.getElementById('playerNameInputs');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = `プレイヤー${i}の名前`;
+                input.id = `player${i}`;
+                container.appendChild(input);
+            }
+        }
+        
+        function assignRoles(playerCount) {
+            const roleAssignment = [];
+            
+            // 基本役職配置
+            if (playerCount >= 4) {
+                roleAssignment.push('werewolf');
+                roleAssignment.push('seer');
+                if (playerCount >= 6) {
+                    roleAssignment.push('knight');
+                }
+                if (playerCount >= 8) {
+                    roleAssignment.push('werewolf');
+                }
+            }
+            
+            // 残りは市民
+            while (roleAssignment.length < playerCount) {
+                roleAssignment.push('citizen');
+            }
+            
+            // シャッフル
+            for (let i = roleAssignment.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [roleAssignment[i], roleAssignment[j]] = [roleAssignment[j], roleAssignment[i]];
+            }
+            
+            return roleAssignment;
+        }
+        
+        function startGame() {
+            const playerCount = parseInt(document.getElementById('playerCount').value);
+            const playerNames = [];
+            
+            for (let i = 1; i <= playerCount; i++) {
+                const name = document.getElementById(`player${i}`).value.trim();
+                if (\!name) {
+                    alert(`プレイヤー${i}の名前を入力してください`);
+                    return;
+                }
+                playerNames.push(name);
+            }
+            
+            const roleAssignment = assignRoles(playerCount);
+            players = playerNames.map((name, index) => ({
+                id: index,
+                name: name,
+                role: roleAssignment[index],
+                alive: true,
+                votes: 0
+            }));
+            
+            gameState.phase = 'day';
+            showGamePhase();
+            updateDisplay();
+            addMessage('ゲームが開始されました！', 'system');
+            
+            // 役職発表
+            players.forEach(player => {
+                const role = roles[player.role];
+                addMessage(`${player.name}さんの役職: ${role.emoji} ${role.name}`, 'system');
+            });
+        }
+        
+        function showGamePhase() {
+            document.getElementById('setupPhase').classList.remove('active');
+            document.getElementById('gamePhase').classList.add('active');
+            document.getElementById('nightPhase').classList.remove('active');
+        }
+        
+        function showNightPhase() {
+            document.getElementById('setupPhase').classList.remove('active');
+            document.getElementById('gamePhase').classList.remove('active');
+            document.getElementById('nightPhase').classList.add('active');
+        }
+        
+        function updateDisplay() {
+            const playerList = document.getElementById('playerList');
+            const phaseTitle = document.getElementById('phaseTitle');
+            
+            phaseTitle.textContent = `${gameState.day}日目 - 昼の時間`;
+            
+            playerList.innerHTML = '';
+            players.forEach(player => {
+                if (\!player.alive) return;
+                
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                card.onclick = () => selectPlayer(player.id);
+                
+                if (gameState.selectedPlayer === player.id) {
+                    card.classList.add('selected');
+                }
+                
+                const role = roles[player.role];
+                card.innerHTML = `
+                    <div><strong>${player.name}</strong></div>
+                    <div class="role-display ${role.color}">${role.emoji} ${role.name}</div>
+                    <div>投票数: ${player.votes}</div>
+                `;
+                
+                playerList.appendChild(card);
+            });
+            
+            document.getElementById('voteBtn').disabled = gameState.selectedPlayer === null;
+        }
+        
+        function selectPlayer(playerId) {
+            if (gameState.selectedPlayer === playerId) {
+                gameState.selectedPlayer = null;
+            } else {
+                gameState.selectedPlayer = playerId;
+            }
+            updateDisplay();
+        }
+        
+        function castVote() {
+            if (gameState.selectedPlayer === null) return;
+            
+            const targetPlayer = players.find(p => p.id === gameState.selectedPlayer);
+            targetPlayer.votes++;
+            gameState.selectedPlayer = null;
+            
+            addMessage(`${targetPlayer.name}に投票しました`, 'system');
+            updateDisplay();
+            
+            // 投票結果の確認
+            const alivePlayers = players.filter(p => p.alive);
+            const totalVotes = alivePlayers.reduce((sum, p) => sum + p.votes, 0);
+            
+            if (totalVotes >= alivePlayers.length) {
+                executeExecution();
+            }
+        }
+        
+        function executeExecution() {
+            const alivePlayers = players.filter(p => p.alive);
+            const maxVotes = Math.max(...alivePlayers.map(p => p.votes));
+            const executed = alivePlayers.filter(p => p.votes === maxVotes);
+            
+            if (executed.length === 1) {
+                const player = executed[0];
+                player.alive = false;
+                const role = roles[player.role];
+                addMessage(`${player.name}(${role.emoji} ${role.name})が処刑されました`, 'death');
+                
+                if (checkWinCondition()) return;
+                
+                document.getElementById('proceedBtn').style.display = 'block';
+            } else {
+                addMessage('投票が同数のため、処刑は行われませんでした', 'system');
+                document.getElementById('proceedBtn').style.display = 'block';
+            }
+            
+            // 投票数リセット
+            players.forEach(p => p.votes = 0);
+            updateDisplay();
+        }
+        
+        function proceedToNight() {
+            gameState.phase = 'night';
+            gameState.nightActions = {};
+            showNightPhase();
+            setupNightPhase();
+        }
+        
+        function setupNightPhase() {
+            const nightActions = document.getElementById('nightActions');
+            const nightPlayerList = document.getElementById('nightPlayerList');
+            
+            nightActions.innerHTML = '<h3>夜の行動を選択してください</h3>';
+            
+            const alivePlayers = players.filter(p => p.alive);
+            const werewolves = alivePlayers.filter(p => p.role === 'werewolf');
+            const seer = alivePlayers.find(p => p.role === 'seer');
+            const knight = alivePlayers.find(p => p.role === 'knight');
+            
+            nightPlayerList.innerHTML = '';
+            alivePlayers.forEach(player => {
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                card.onclick = () => selectNightTarget(player.id);
+                
+                card.innerHTML = `
+                    <div><strong>${player.name}</strong></div>
+                `;
+                
+                nightPlayerList.appendChild(card);
+            });
+            
+            let actionsNeeded = 0;
+            
+            if (werewolves.length > 0) {
+                actionsNeeded++;
+                const werewolfAction = document.createElement('div');
+                werewolfAction.innerHTML = '<p>🐺 人狼: 襲撃対象を選択</p>';
+                nightActions.appendChild(werewolfAction);
+            }
+            
+            if (seer) {
+                actionsNeeded++;
+                const seerAction = document.createElement('div');
+                seerAction.innerHTML = '<p>🔮 占い師: 占い対象を選択</p>';
+                nightActions.appendChild(seerAction);
+            }
+            
+            if (knight) {
+                actionsNeeded++;
+                const knightAction = document.createElement('div');
+                knightAction.innerHTML = '<p>🛡️ 騎士: 守る対象を選択</p>';
+                nightActions.appendChild(knightAction);
+            }
+        }
+        
+        function selectNightTarget(playerId) {
+            // 簡易実装: 最初に選択されたプレイヤーを夜の行動対象とする
+            gameState.nightActions.target = playerId;
+            
+            const cards = document.querySelectorAll('#nightPlayerList .player-card');
+            cards.forEach(card => card.classList.remove('selected'));
+            
+            const targetCard = cards[playerId];
+            if (targetCard) targetCard.classList.add('selected');
+            
+            document.getElementById('nightBtn').disabled = false;
+        }
+        
+        function executeNightActions() {
+            const targetId = gameState.nightActions.target;
+            if (targetId === undefined) return;
+            
+            const target = players.find(p => p.id === targetId);
+            
+            // 簡易実装: 選択されたプレイヤーが襲撃される
+            target.alive = false;
+            const role = roles[target.role];
+            addMessage(`夜が明けました。${target.name}(${role.emoji} ${role.name})が犠牲になりました`, 'death');
+            
+            gameState.day++;
+            gameState.phase = 'day';
+            
+            if (checkWinCondition()) return;
+            
+            showGamePhase();
+            updateDisplay();
+            document.getElementById('proceedBtn').style.display = 'none';
+        }
+        
+        function checkWinCondition() {
+            const alivePlayers = players.filter(p => p.alive);
+            const aliveWerewolves = alivePlayers.filter(p => p.role === 'werewolf');
+            const aliveCitizens = alivePlayers.filter(p => p.role \!== 'werewolf');
+            
+            if (aliveWerewolves.length === 0) {
+                addMessage('🎉 市民陣営の勝利！すべての人狼を倒しました！', 'system');
+                gameState.gameEnded = true;
+                return true;
+            }
+            
+            if (aliveWerewolves.length >= aliveCitizens.length) {
+                addMessage('🐺 人狼陣営の勝利！人狼が生存者の半数以上になりました！', 'system');
+                gameState.gameEnded = true;
+                return true;
+            }
+            
+            return false;
+        }
+        
+        function addMessage(text, type = '') {
+            const messageLog = document.getElementById('messageLog');
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            message.textContent = text;
+            messageLog.appendChild(message);
+            messageLog.scrollTop = messageLog.scrollHeight;
+        }
+        
+        // 初期化
+        document.getElementById('playerCount').addEventListener('change', generatePlayerInputs);
+        generatePlayerInputs();
+    </script>
+</body>
+</html>

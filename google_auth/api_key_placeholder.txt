@@ -1,0 +1,13 @@
+# Google Cloud Vision API KEY をここに設定してください
+# 
+# 取得方法:
+# 1. https://console.cloud.google.com/apis/credentials にアクセス
+# 2. プロジェクト thinksblog-439301 を選択
+# 3. "認証情報を作成" → "API キー" を選択
+# 4. 作成されたAPI KEYをこのファイルに保存
+#
+# 使用方法:
+# echo "YOUR_API_KEY_HERE" > /home/fujinosuke/projects/google_auth/api_key.txt
+#
+# 例:
+# AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

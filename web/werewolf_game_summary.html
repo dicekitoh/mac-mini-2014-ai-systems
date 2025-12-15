@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人狼ゲーム要約</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #d32f2f;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        h2 {
+            color: #1976d2;
+            border-left: 5px solid #1976d2;
+            padding-left: 15px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #388e3c;
+            margin-top: 25px;
+        }
+        .role-section {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        .role {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+        }
+        .werewolf {
+            border-left-color: #d32f2f;
+        }
+        .villager {
+            border-left-color: #388e3c;
+        }
+        .special {
+            border-left-color: #9c27b0;
+        }
+        .phase {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .important {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #ff9800;
+            margin: 15px 0;
+        }
+        .strategy {
+            background: #f3e5f5;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #9c27b0;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐺 人狼ゲーム完全ガイド 🐺</h1>
+        
+        <h2>📋 ゲーム概要</h2>
+        <p><strong>人狼ゲーム</strong>は、村人チームと人狼チームに分かれて戦う心理戦ゲームです。昼は議論と投票、夜は人狼による襲撃が行われ、最終的にどちらかのチームが勝利条件を満たすまで続きます。</p>
+        
+        <div class="important">
+            <h3>🎯 勝利条件</h3>
+            <ul>
+                <li><strong>村人チーム</strong>: 人狼を全員処刑する</li>
+                <li><strong>人狼チーム</strong>: 人狼の数 ≥ 村人の数 にする</li>
+            </ul>
+        </div>
+
+        <h2>👥 役職一覧</h2>
+        
+        <div class="role-section">
+            <h3>🐺 人狼陣営</h3>
+            <div class="role werewolf">
+                <h4>人狼（ウェアウルフ）</h4>
+                <p>夜に村人を1人襲撃できる。人狼同士は仲間を知っている。昼は村人のふりをして議論に参加し、疑いを他の人に向ける。</p>
+            </div>
+            <div class="role werewolf">
+                <h4>狂人（マッドマン）</h4>
+                <p>人狼チームだが、人狼が誰かわからない。人狼を勝利させるために村人を混乱させる役割。</p>
+            </div>
+        </div>
+
+        <div class="role-section">
+            <h3>🏘️ 村人陣営</h3>
+            <div class="role villager">
+                <h4>村人（シチズン）</h4>
+                <p>特別な能力はないが、議論と投票で人狼を見つけ出す基本的な役職。</p>
+            </div>
+            <div class="role special">
+                <h4>占い師（フォーチュンテラー）</h4>
+                <p>毎晩1人を占い、その人が「人狼」か「人狼ではない」かを知ることができる。</p>
+            </div>
+            <div class="role special">
+                <h4>騎士・狩人（ボディガード）</h4>
+                <p>毎晩1人を護衛し、その人が人狼に襲撃されても守ることができる。自分は護衛できない。</p>
+            </div>
+            <div class="role special">
+                <h4>霊媒師（ミディアム）</h4>
+                <p>処刑された人が「人狼だったか」「村人だったか」を知ることができる。</p>
+            </div>
+        </div>
+
+        <h2>🕐 ゲームの流れ</h2>
+        
+        <div class="phase">
+            <h3>🌅 昼フェーズ（議論時間）</h3>
+            <ul>
+                <li>全員で自由に議論する（5-10分程度）</li>
+                <li>誰が人狼か推理し、情報を共有する</li>
+                <li>占い師や霊媒師は結果を報告（カミングアウト）</li>
+                <li>最後に投票で1人を処刑する</li>
+            </ul>
+        </div>
+
+        <div class="phase">
+            <h3>🌙 夜フェーズ（能力使用）</h3>
+            <ul>
+                <li>全員が目を閉じる</li>
+                <li>人狼が襲撃対象を選ぶ</li>
+                <li>占い師が占い対象を選ぶ</li>
+                <li>騎士が護衛対象を選ぶ</li>
+                <li>翌朝、襲撃結果が発表される</li>
+            </ul>
+        </div>
+
+        <h2>🎲 基本的な進行例</h2>
+        <ol>
+            <li><strong>ゲーム開始</strong> - 役職配布、ゲーム説明</li>
+            <li><strong>1日目昼</strong> - 情報なしで議論、投票</li>
+            <li><strong>1日目夜</strong> - 各役職が能力使用</li>
+            <li><strong>2日目朝</strong> - 襲撃結果発表</li>
+            <li><strong>2日目昼</strong> - 占い結果などを元に議論</li>
+            <li>勝利条件を満たすまで繰り返し</li>
+        </ol>
+
+        <div class="strategy">
+            <h2>🧠 戦略とコツ</h2>
+            <h3>村人陣営の戦略</h3>
+            <ul>
+                <li>占い師の結果を信頼し、情報を整理する</li>
+                <li>発言の矛盾や不自然な行動を見抜く</li>
+                <li>グレーゾーン（怪しい人）を絞り込む</li>
+                <li>重要な役職を護衛で守る</li>
+            </ul>
+            
+            <h3>人狼陣営の戦略</h3>
+            <ul>
+                <li>村人のふりをして自然に振る舞う</li>
+                <li>偽の占い師として騙る（偽占い）</li>
+                <li>村人同士を疑わせて混乱を作る</li>
+                <li>重要な役職を優先的に襲撃する</li>
+            </ul>
+        </div>
+
+        <div class="important">
+            <h2>⚠️ 重要なルール</h2>
+            <ul>
+                <li>夜は私語禁止（能力使用時以外は静かに）</li>
+                <li>死んだプレイヤーは一切発言禁止</li>
+                <li>ゲーム外の根拠による推理は禁止</li>
+                <li>役職騙りは戦略の一部として認められる</li>
+                <li>投票は必ず参加（棄権不可）</li>
+            </ul>
+        </div>
+
+        <h2>🎮 おすすめ人数構成</h2>
+        <div class="role-section">
+            <h3>7人構成（初心者向け）</h3>
+            <p>人狼2、占い師1、騎士1、村人3</p>
+            
+            <h3>9人構成（標準）</h3>
+            <p>人狼2、占い師1、霊媒師1、騎士1、村人4</p>
+            
+            <h3>12人構成（上級者向け）</h3>
+            <p>人狼3、狂人1、占い師1、霊媒師1、騎士1、村人5</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; color: #666;">
+            <p>🌟 人狼ゲームを楽しもう！心理戦と推理の醍醐味を味わってください 🌟</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,169 @@
+SMS送信の完全バックグラウンドフロー解説
+
+Phase 1: ユーザーからの指示受信
+1.1 Claude側での処理
+[ユーザー] "SMSを送信して"
+    ↓
+[Claude Code] 指示解析
+    ↓
+[Claude Code] MacMini2014への接続判断
+    ↓
+[Claude Code] SSH接続準備
+
+1.2 SSH接続確立
+[Claude Code] → SSH接続開始
+    ↓
+[ローカルPC] → sshpass経由でパスワード送信
+    ↓
+[ネットワーク] → パケット暗号化・送信
+    ↓
+[MacMini2014] → SSH認証・セッション確立
+
+---
+
+Phase 2: MacMini2014でのスクリプト実行
+2.1 スクリプト起動プロセス
+[MacMini2014] bash プロセス起動
+    ↓
+[MacMini2014] ~/projects/sms_system/send_now.sh 読み込み
+    ↓
+[MacMini2014] 環境変数・関数定義読み込み
+    ↓
+[MacMini2014] 引数解析（電話番号・メッセージ）
+
+2.2 電話番号正規化処理
+[MacMini2014] 入力番号: "09068765380"
+    ↓
+[Python] ^0[0-9] パターン検証
+    ↓
+[文字列処理] "+81" + "9068765380" = "+819068765380"
+    ↓
+[変数格納] phone="+819068765380"
+
+---
+
+Phase 3: TextBelt API通信
+3.1 HTTP POST リクエスト準備
+[MacMini2014] requests ライブラリ使用
+    ↓
+[Python] HTTPリクエストヘッダー作成
+Content-Type: application/x-www-form-urlencoded
+User-Agent: python-requests/2.x.x
+    ↓
+[Python] POSTボディ作成
+phone=%2B819068765380&message=メッセージ&key=APIキー
+
+3.2 ネットワーク通信
+[MacMini2014] → DNS解決: textbelt.com
+    ↓
+[DNS] → IPアドレス応答: 54.x.x.x
+    ↓
+[MacMini2014] → TCP接続確立 (ポート443)
+    ↓
+[SSL/TLS] → 暗号化ハンドシェイク
+    ↓
+[MacMini2014] → HTTPS POST送信
+
+---
+
+Phase 4: TextBelt サーバー処理
+4.1 TextBelt社での内部処理
+[TextBelt Load Balancer] → リクエスト受信
+    ↓
+[TextBelt API Server] → APIキー認証
+    ↓
+[TextBelt Database] → 残高確認・減算
+    ↓
+[TextBelt SMS Gateway] → キャリア選択（ドコモ/au/SoftBank）
+    ↓
+[TextBelt] → SMS送信指示
+
+4.2 キャリアネットワーク経由
+[TextBelt] → 日本キャリア（ドコモ/au/SoftBank）
+    ↓
+[キャリア SMS-C] → SMSセンター処理
+    ↓
+[基地局] → 無線送信
+    ↓
+[携帯端末] → SMS受信・通知
+
+---
+
+Phase 5: レスポンス処理
+5.1 TextBelt レスポンス
+[TextBelt] → JSON レスポンス生成
+{
+  "success": true,
+  "textId": "107781751948525939",
+  "quotaRemaining": 116
+}
+    ↓
+[HTTPS] → 暗号化送信
+    ↓
+[MacMini2014] → Python requests でレスポンス受信
+
+5.2 MacMini2014での結果処理
+[Python] → JSON パース
+    ↓
+[変数抽出] textid="107781751948525939"
+[変数抽出] quota="116"
+    ↓
+[条件分岐] success=true → 成功処理
+
+---
+
+Phase 6: ログ記録処理
+6.1 ログファイル書き込み
+[Python] → log_usage 関数呼び出し
+    ↓
+[ファイルI/O] → ~/projects/sms_system/logs/sms_history.log 書き込み
+    ↓
+[bash] → 送信記録追記
+
+6.2 タイムスタンプ生成
+[Python] → datetime.now() 実行
+    ↓
+[システムコール] → 現在時刻取得
+    ↓
+[フォーマット] → "2025-07-12 10:15:30"
+
+---
+
+Phase 7: 結果返却
+7.1 Claude への結果返却
+[MacMini2014] → SSH出力ストリーム
+    ↓
+[ネットワーク] → 暗号化転送
+    ↓
+[Claude Code] → 結果受信・解析
+    ↓
+[Claude Code] → ユーザーへの応答生成
+
+7.2 プロセス終了処理
+[Python] → exit 0
+    ↓
+[OS] → プロセス終了処理
+    ↓
+[SSH] → セッション維持
+    ↓
+[Claude Code] → 次の指示待機
+
+---
+
+⏱️ タイミング詳細
+ < /dev/null |  Phase   | 処理時間   | 詳細          |
+|---------|--------|-------------|
+| SSH接続   | ~0.5秒  | ローカルネットワーク内 |
+| スクリプト実行 | ~0.1秒  | Python処理      |
+| API通信   | ~2-5秒  | 海外サーバー通信    |
+| SMS配信   | ~5-30秒 | キャリア依存      |
+| ログ記録    | ~0.1秒  | ローカルファイルI/O |
+
+プロセス・スレッド
+[Claude Code] → [SSH Client] → [Network] → [MacMini2014]
+                                              ↓
+                                          [Python process]
+                                              ↓
+                                          [requests subprocess]
+                                              ↓
+                                          [logging subprocess]

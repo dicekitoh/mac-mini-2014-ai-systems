@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>メール下書き一覧</title>
+    <style>
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        .mail-list {
+            list-style: none;
+            padding: 0;
+        }
+        .mail-item {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        .mail-link {
+            font-size: 18px;
+            color: #2196F3;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .mail-link:hover {
+            text-decoration: underline;
+        }
+        .instruction {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .highlight {
+            background-color: #fffbcc;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>メール下書き一覧</h1>
+        
+        <ul class="mail-list">
+            <li class="mail-item">
+                <a href="http://192.168.3.43/onsen-mail.html" class="mail-link" target="_blank">
+                    温泉楽しかったメール
+                </a>
+                <div class="instruction">
+                    <span class="highlight">Ctrl + クリック</span> または <span class="highlight">右クリック → 新しいタブで開く</span> でメールを確認
+                </div>
+            </li>
+            <li class="mail-item">
+                <a href="file:///home/rootmax/温泉メール下書き.html" class="mail-link" target="_blank">
+                    温泉楽しかったねまた行こうねメール
+                </a>
+                <div class="instruction">
+                    <span class="highlight">Ctrl + クリック</span> または <span class="highlight">右クリック → 新しいタブで開く</span> でメールを確認
+                </div>
+            </li>
+            <li class="mail-item">
+                <a href="file:///home/rootmax/mail_draft_preview_original.html" class="mail-link" target="_blank">
+                    【オリジナル】感動的なメール下書きシステム（15:45作成）
+                </a>
+                <div class="instruction">
+                    <span class="highlight">Ctrl + クリック</span> または <span class="highlight">右クリック → 新しいタブで開く</span> でメールを確認
+                </div>
+            </li>
+            <li class="mail-item">
+                <a href="file:///home/rootmax/初回訪問お礼メール.html" class="mail-link" target="_blank">
+                    初回訪問お礼メール 【ローカル】
+                </a>
+                <div class="instruction">
+                    <span class="highlight">Ctrl + クリック</span> でローカルファイルを開く
+                </div>
+            </li>
+            <li class="mail-item">
+                <a href="http://192.168.3.43/first-visit-thanks.html" class="mail-link" target="_blank">
+                    初回訪問お礼メール 【ファイルサーバー】
+                </a>
+                <div class="instruction">
+                    <span class="highlight">Ctrl + クリック</span> でファイルサーバーから開く
+                </div>
+            </li>
+        </ul>
+        
+        <div style="margin-top: 40px; padding: 20px; background-color: #e8f5e9; border-radius: 8px;">
+            <h3 style="margin-top: 0;">使い方</h3>
+            <ul style="color: #555;">
+                <li><strong>Ctrl + クリック</strong>: 新しいタブで開きます</li>
+                <li><strong>右クリック → 新しいタブで開く</strong>: 同様に新しいタブで開きます</li>
+                <li><strong>通常クリック</strong>: 同じタブで開きます</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

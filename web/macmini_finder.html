@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MacMini2014 自動検索</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .status {
+            text-align: center;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .searching {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .found {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .not-found {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #e3f2fd;
+            border-radius: 5px;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .ip-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2196f3;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        .ip-link:hover {
+            background-color: #1976d2;
+        }
+        .progress {
+            margin: 20px 0;
+        }
+        #progressList {
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-family: monospace;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MacMini2014 自動検索</h1>
+        
+        <div id="status" class="status searching">
+            検索準備中...
+        </div>
+        
+        <div id="result" class="result">
+            <h3>検索結果:</h3>
+            <div id="resultContent"></div>
+        </div>
+        
+        <div class="progress">
+            <button id="searchButton" onclick="startSearch()">検索開始</button>
+            <div id="progressList"></div>
+        </div>
+        
+        <div style="margin-top: 30px; padding: 20px; background-color: #f0f0f0; border-radius: 5px;">
+            <h3>検索方法:</h3>
+            <ol>
+                <li>まず、ホスト名でアクセスを試みます</li>
+                <li>次に、既知のIPアドレスにアクセスします</li>
+                <li>その後、サブネット内の各IPアドレスをチェックします</li>
+            </ol>
+            <p><strong>注意:</strong> この検索はブラウザから実行されるため、CORSポリシーにより一部の検索が制限される場合があります。</p>
+        </div>
+    </div>
+
+    <script>
+        const knownAddresses = [
+            'macmini2014',
+            'macmini2014.local',
+            '192.168.3.43',
+            '192.168.1.5'
+        ];
+        
+        let foundIP = null;
+        
+        function updateStatus(message, className) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status ' + className;
+        }
+        
+        function addProgress(message) {
+            const progressList = document.getElementById('progressList');
+            const entry = document.createElement('div');
+            entry.textContent = new Date().toLocaleTimeString() + ' - ' + message;
+            progressList.appendChild(entry);
+            progressList.scrollTop = progressList.scrollHeight;
+        }
+        
+        function showResult(ip) {
+            const result = document.getElementById('result');
+            const resultContent = document.getElementById('resultContent');
+            
+            result.classList.add('show');
+            resultContent.innerHTML = `
+                <p><strong>MacMini2014が見つかりました！</strong></p>
+                <p>IPアドレス: <strong>${ip}</strong></p>
+                <div style="margin-top: 20px;">
+                    <a href="http://${ip}/" class="ip-link" target="_blank">Webサーバーを開く</a>
+                    <a href="http://${ip}/ip_status.html" class="ip-link" target="_blank">IPステータスを確認</a>
+                </div>
+            `;
+        }
+        
+        async function checkAddress(address) {
+            addProgress(`チェック中: ${address}`);
+            
+            try {
+                // 画像を使った接続テスト（CORSを回避）
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    const timeout = setTimeout(() => {
+                        img.src = '';
+                        reject(new Error('Timeout'));
+                    }, 2000);
+                    
+                    img.onload = () => {
+                        clearTimeout(timeout);
+                        addProgress(`✓ 応答あり: ${address}`);
+                        resolve(address);
+                    };
+                    
+                    img.onerror = () => {
+                        clearTimeout(timeout);
+                        addProgress(`✗ 応答なし: ${address}`);
+                        reject(new Error('Not found'));
+                    };
+                    
+                    // favicon.icoか小さな画像をリクエスト
+                    img.src = `http://${address}/favicon.ico?t=${Date.now()}`;
+                });
+            } catch (error) {
+                return null;
+            }
+        }
+        
+        async function startSearch() {
+            const button = document.getElementById('searchButton');
+            button.disabled = true;
+            button.textContent = '検索中...';
+            
+            document.getElementById('progressList').innerHTML = '';
+            document.getElementById('result').classList.remove('show');
+            
+            updateStatus('MacMini2014を検索中...', 'searching');
+            
+            // 1. 既知のアドレスをチェック
+            for (const address of knownAddresses) {
+                try {
+                    const result = await checkAddress(address);
+                    if (result) {
+                        foundIP = result;
+                        updateStatus('MacMini2014が見つかりました！', 'found');
+                        showResult(result);
+                        button.disabled = false;
+                        button.textContent = '再検索';
+                        return;
+                    }
+                } catch (error) {
+                    // 次のアドレスを試す
+                }
+            }
+            
+            // 2. サブネット内をスキャン（192.168.3.1-254）
+            addProgress('サブネット 192.168.3.0/24 をスキャン開始...');
+            
+            const promises = [];
+            for (let i = 1; i <= 254; i++) {
+                const ip = `192.168.3.${i}`;
+                promises.push(checkAddress(ip));
+            }
+            
+            // すべての結果を待つ（最大10秒）
+            const results = await Promise.race([
+                Promise.all(promises),
+                new Promise(resolve => setTimeout(() => resolve([]), 10000))
+            ]);
+            
+            const found = results.filter(r => r !== null);
+            
+            if (found.length > 0) {
+                // IPステータスページで確認
+                for (const ip of found) {
+                    try {
+                        const statusCheck = await checkAddress(`${ip}/ip_status.html`);
+                        if (statusCheck) {
+                            foundIP = ip;
+                            updateStatus('MacMini2014が見つかりました！', 'found');
+                            showResult(ip);
+                            button.disabled = false;
+                            button.textContent = '再検索';
+                            return;
+                        }
+                    } catch (error) {
+                        // 次のIPを試す
+                    }
+                }
+            }
+            
+            updateStatus('MacMini2014が見つかりませんでした', 'not-found');
+            button.disabled = false;
+            button.textContent = '再検索';
+        }
+        
+        // ページ読み込み時に自動実行
+        window.onload = function() {
+            updateStatus('検索ボタンをクリックして開始してください', 'searching');
+        };
+    </script>
+</body>
+</html>

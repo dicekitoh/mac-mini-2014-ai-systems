@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MacMini2014 IPアドレス検索</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .info-box {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .method {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .method h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        .ip-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2196f3;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        .ip-link:hover {
+            background-color: #1976d2;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .command-box {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MacMini2014 IPアドレス検索方法</h1>
+        
+        <div class="info-box">
+            <strong>MacMini2014の情報:</strong><br>
+            MACアドレス: 98:10:e8:f1:98:b4<br>
+            ホスト名: macmini2014<br>
+            通常のIPアドレス: 192.168.3.43
+        </div>
+
+        <div class="method">
+            <h3>方法1: 直接アクセス（IPアドレスが分かっている場合）</h3>
+            <p>以下のリンクから直接アクセスできます：</p>
+            <a href="http://192.168.3.43/" class="ip-link">http://192.168.3.43/</a>
+            <a href="http://192.168.3.43/ip_status.html" class="ip-link">IPステータスページ</a>
+        </div>
+
+        <div class="method">
+            <h3>方法2: ホスト名でアクセス</h3>
+            <p>ローカルネットワーク内では、ホスト名でアクセスできる場合があります：</p>
+            <a href="http://macmini2014/" class="ip-link">http://macmini2014/</a>
+            <a href="http://macmini2014.local/" class="ip-link">http://macmini2014.local/</a>
+        </div>
+
+        <div class="method">
+            <h3>方法3: コマンドラインで検索</h3>
+            
+            <h4>Windows:</h4>
+            <div class="command-box">
+                ping macmini2014<br>
+                arp -a | findstr "98-10-e8-f1-98-b4"
+            </div>
+            
+            <h4>Mac/Linux:</h4>
+            <div class="command-box">
+                ping macmini2014.local<br>
+                arp -a | grep "98:10:e8:f1:98:b4"
+            </div>
+        </div>
+
+        <div class="method">
+            <h3>方法4: Pythonスクリプトで検索</h3>
+            <p>find_macmini2014.py をダウンロードして実行：</p>
+            <div class="command-box">
+                python find_macmini2014.py
+            </div>
+        </div>
+
+        <div class="method">
+            <h3>方法5: ルーター管理画面から確認</h3>
+            <p>ルーターの管理画面にアクセスして、接続されているデバイス一覧を確認：</p>
+            <ol>
+                <li><a href="http://192.168.3.1/" target="_blank">ルーター管理画面</a>にアクセス</li>
+                <li>ユーザー名: user / パスワード: ***REMOVED*** でログイン</li>
+                <li>「接続デバイス一覧」や「DHCPクライアント」を探す</li>
+                <li>MACアドレス 98:10:e8:f1:98:b4 を探す</li>
+            </ol>
+        </div>
+
+        <div class="info-box" style="background-color: #fff3cd; border-color: #ffc107;">
+            <strong>ヒント:</strong><br>
+            • IPアドレスが変わった場合は、まず方法2（ホスト名）を試してください<br>
+            • それでもアクセスできない場合は、方法3〜5で新しいIPアドレスを探してください<br>
+            • 見つかったIPアドレスは、ブックマークに保存しておくと便利です
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,60 @@
+Google Vision OCR結果
+==================================================
+ファイル: /home/fujinosuke/ocr_inbox/スクリーンショット 2025-05-25 112036.png
+処理時刻: 2025-06-16 13:01:59
+==================================================
+
+画像
+------------------------------
+📄 検出されたテキスト:
+C:\
+* Works Mobile API
+● Fetch(https://developers.worksmobile.com/jp/docs/calendar-default-user-get...
+| Received 47.4KB (200)
+●ドキュメントから、 カレンダー 取得のための複数のエンドポイントがあることが分
+かりました。ユ ザーのデフォルトカレンダーを取得する専用のエンドポイントが
+あるようです。
+● Write(file_path: get-default-calendar.js)...
+Wrote 161 lines to get-default-calendar.js
+const fs = require('fs');
+const jwt = require('jsonwebtoken');
+const axios = require('axios');
+async function getDefaultCalendar() {
+・・・
+// 認証情報
+const CLIENT_ID = 'FV7iW9Gqbw3Vira5yKbh';
+const CLIENT_SECRET = 'JoSw53hjQ7';
+const SERVICE_ACCOUNT = 'nq3g5.serviceaccount@works-608300 i
+const PRIVATE_KEY_PATH = './private_20250525103110.key';
++151 lines (ctrl+r to expand)
+● Bash(cd /home/rootmax/lineworks && node get-default-calendar.js)...
+| LINE WORKS デフォルトカレンダー 取得テスト
+... +50 lines (ctrl+r to expand)
+デフォルトカレンダーが見つかりませんでした
+● 素晴らしい! カレンダーが見つかりました!
+● Update Todos
+[ ロカレンダーIDを使用してイベントを取得
+● Write(file_path: read-calendar-events-with-id.js)...
+Wrote 209 lines to read-calendar-events-with-id.js
+const fs = require('fs');
+const jwt = require('jsonwebtoken');
+const axios = require('axios');
+async function readCalendarEvents() {
+// 認証情報
+const CLIENT_ID = 'FV7iW9Gqbw3Vira5yKbh';
+const CLIENT_SECRET = 'JoSw53hjQ7';
+const SERVICE_ACCOUNT = 'nq3g5.serviceaccount@works-608300 i
+const PRIVATE_KEY_PATH = './private_20250525103110.key';
+・・・
++199 lines (ctrl+r to expand)
+● Bash(cd /home/rootmax/lineworks && node read-calendar-events-with-id.js)...
+| LINE WORKS カレンダー イベント読み取り
++19 lines (ctrl+r to expand)
+代替パラメータでもエラー : undefined
+☑
+
+📊 信頼度:
+92.08%
+
+--------------------------------------------------
+

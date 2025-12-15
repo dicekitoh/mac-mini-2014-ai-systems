@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MacMini2014 API クライアント</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007AFF;
+            padding-bottom: 10px;
+        }
+        .button-group {
+            margin: 20px 0;
+        }
+        button {
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0051D5;
+        }
+        .result {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .error {
+            color: #d32f2f;
+            background-color: #ffebee;
+            border-color: #f44336;
+        }
+        .success {
+            color: #388e3c;
+            background-color: #e8f5e9;
+            border-color: #4caf50;
+        }
+        .info {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border-radius: 5px;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖥️ MacMini2014 API クライアント</h1>
+        
+        <div class="info">
+            <p><strong>使い方:</strong></p>
+            <ol>
+                <li>このページをブラウザで開く</li>
+                <li>ボタンをクリックしてAPIを呼び出す</li>
+                <li>結果をコピーしてClaude（Web版）に貼り付ける</li>
+            </ol>
+        </div>
+
+        <div class="button-group">
+            <h2>公開エンドポイント（認証不要）</h2>
+            <button onclick="callAPI('/api/public/health')">ヘルスチェック</button>
+            <button onclick="callAPI('/api/public/info')">システム情報</button>
+            <button onclick="callAPI('/api/public/time')">サーバー時刻</button>
+            <button onclick="callEcho()">エコーテスト</button>
+        </div>
+
+        <div class="button-group">
+            <h2>認証が必要なエンドポイント</h2>
+            <input type="text" id="authToken" placeholder="認証トークン" value="***REMOVED***">
+            <br>
+            <button onclick="callAuthAPI('/api/system-info')">詳細システム情報</button>
+            <button onclick="callAuthAPI('/api/health')">認証付きヘルス</button>
+            <br>
+            <input type="text" id="filePath" placeholder="ファイルパス (例: /etc/hostname)">
+            <button onclick="readFile()">ファイル読み取り</button>
+            <br>
+            <input type="text" id="dirPath" placeholder="ディレクトリパス (例: /home/fujinosuke)">
+            <button onclick="listDirectory()">ディレクトリ一覧</button>
+        </div>
+
+        <div id="result" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://mattress-berlin-ut-viking.trycloudflare.com';
+        
+        function showResult(data, isError = false) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result ' + (isError ? 'error' : 'success');
+            resultDiv.textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+        }
+
+        async function callAPI(endpoint) {
+            try {
+                const response = await fetch(API_BASE + endpoint);
+                const data = await response.json();
+                showResult(data);
+            } catch (error) {
+                showResult(`エラー: ${error.message}`, true);
+            }
+        }
+
+        async function callAuthAPI(endpoint) {
+            try {
+                const token = document.getElementById('authToken').value;
+                const response = await fetch(API_BASE + endpoint, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                showResult(data);
+            } catch (error) {
+                showResult(`エラー: ${error.message}`, true);
+            }
+        }
+
+        async function callEcho() {
+            const message = prompt('メッセージを入力してください:', 'Hello from Browser!');
+            if (message) {
+                callAPI(`/api/public/echo?message=${encodeURIComponent(message)}`);
+            }
+        }
+
+        async function readFile() {
+            const path = document.getElementById('filePath').value;
+            if (!path) {
+                showResult('ファイルパスを入力してください', true);
+                return;
+            }
+            const token = document.getElementById('authToken').value;
+            try {
+                const response = await fetch(`${API_BASE}/api/read-file?path=${encodeURIComponent(path)}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                showResult(data);
+            } catch (error) {
+                showResult(`エラー: ${error.message}`, true);
+            }
+        }
+
+        async function listDirectory() {
+            const path = document.getElementById('dirPath').value;
+            if (!path) {
+                showResult('ディレクトリパスを入力してください', true);
+                return;
+            }
+            const token = document.getElementById('authToken').value;
+            try {
+                const response = await fetch(`${API_BASE}/api/list-directory?path=${encodeURIComponent(path)}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                showResult(data);
+            } catch (error) {
+                showResult(`エラー: ${error.message}`, true);
+            }
+        }
+
+        // ページ読み込み時に自動でヘルスチェック
+        window.onload = () => {
+            callAPI('/api/public/health');
+        };
+    </script>
+</body>
+</html>

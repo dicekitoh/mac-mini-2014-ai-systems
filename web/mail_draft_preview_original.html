@@ -1,0 +1,155 @@
+<\!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📧 メール下書きプレビュー</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .email-preview {
+            border: 2px solid #e1e1e1;
+            margin: 20px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .email-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e1e1e1;
+        }
+        .email-field {
+            margin: 10px 0;
+            font-size: 15px;
+        }
+        .email-field strong {
+            color: #495057;
+            margin-right: 10px;
+            font-weight: 600;
+            min-width: 80px;
+            display: inline-block;
+        }
+        .email-body {
+            padding: 25px;
+            background: white;
+            white-space: pre-wrap;
+            font-family: \"Hiragino Sans\", \"Yu Gothic\", sans-serif;
+            font-size: 15px;
+            line-height: 1.8;
+            color: #333;
+            border-radius: 0 0 6px 6px;
+        }
+        .footer {
+            padding: 20px;
+            background: #f8f9fa;
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .draft-info {
+            background: #e3f2fd;
+            padding: 15px;
+            margin: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #2196f3;
+        }
+        .draft-info h3 {
+            margin: 0 0 10px 0;
+            color: #1976d2;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📧 メール下書きプレビュー</h1>
+            <p>Mail Draft Preview System - MacMini2014</p>
+        </div>
+        
+        <div class="draft-info">
+            <h3>💡 プレビュー機能について</h3>
+            <p>メール内容の視覚的確認専用システムです。実際の送信は別途行ってください。</p>
+        </div>
+        
+        <div class="email-preview">
+            <div class="email-header">
+                <div class="email-field">
+                    <strong>📤 送信者:</strong>
+                    <span id="from-addr">amitri@mac.com</span>
+                </div>
+                <div class="email-field">
+                    <strong>📥 宛先:</strong>
+                    <span id="to-addr">itoh@thinksblog.com</span>
+                </div>
+                <div class="email-field">
+                    <strong>📋 件名:</strong>
+                    <span id="subject">メール件名がここに表示されます</span>
+                </div>
+                <div class="email-field">
+                    <strong>🕐 作成日時:</strong>
+                    <span id="draft-time">2025年06月03日 15時45分</span>
+                </div>
+            </div>
+            
+            <div class="email-body" id="email-content">メール本文がここに表示されます。
+
+この部分にメールの内容が入ります。
+視覚的に確認することで、送信前の最終チェックができます。
+
+改行やレイアウトも実際のメール表示と同様に確認できます。</div>
+        </div>
+        
+        <div class="footer">
+            <p>📋 メール下書きプレビューシステム by MacMini2014</p>
+            <p>実際のメール送信は Claude Code から実行してください</p>
+        </div>
+    </div>
+
+    <script>
+        // 現在時刻を更新
+        document.getElementById(\"draft-time\").textContent = new Date().toLocaleString(\"ja-JP\", {
+            year: \"numeric\",
+            month: \"2-digit\",
+            day: \"2-digit\",
+            hour: \"2-digit\",
+            minute: \"2-digit\"
+        }).replace(/\//g, \"年\").replace(\",\", \" \") + \"分\";
+        
+        // URLパラメータからメール内容を取得
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get(\"subject\")) {
+            document.getElementById(\"subject\").textContent = decodeURIComponent(urlParams.get(\"subject\"));
+        }
+        if (urlParams.get(\"body\")) {
+            document.getElementById(\"email-content\").textContent = decodeURIComponent(urlParams.get(\"body\"));
+        }
+        if (urlParams.get(\"to\")) {
+            document.getElementById(\"to-addr\").textContent = decodeURIComponent(urlParams.get(\"to\"));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "token_files": {
+    "統合認証": "/home/fujinosuke/projects/google_auth/unified_google_token.pickle",
+    "Google Contacts": "/home/fujinosuke/google_contacts/token.pickle",
+    "Google Drive": "/home/fujinosuke/projects/google_auth/token_drive.pickle",
+    "Google Docs": "/home/fujinosuke/projects/google_auth/google_docs_token.pickle",
+    "永続認証": "/home/fujinosuke/projects/google_auth/token_persistent.pickle",
+    "連絡先リアル": "/home/fujinosuke/google/token_contacts_real.pickle",
+    "Bot用連絡先": "/home/fujinosuke/google_contacts/contact_manager_v2_bot_github/token.pickle"
+  },
+  "refresh_settings": {
+    "check_interval_minutes": 30,
+    "refresh_before_expiry_hours": 6,
+    "max_retry_attempts": 3,
+    "retry_delay_seconds": 300
+  },
+  "alert_settings": {
+    "enable_email_alerts": true,
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "sender_email": "itoh@thinksblog.com",
+    "sender_password": "***REMOVED***",
+    "alert_email": "itoh@thinksblog.com",
+    "alert_on_failure": true,
+    "alert_on_success": false,
+    "daily_status_report": true
+  },
+  "logging": {
+    "log_file": "/home/fujinosuke/logs/google_auth_keepalive.log",
+    "max_log_size_mb": 10,
+    "backup_count": 5
+  }
+}

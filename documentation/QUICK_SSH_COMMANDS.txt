@@ -1,0 +1,35 @@
+# MacMini2014 SSH 接続クイックガイド
+
+## 🚀 基本接続（最重要）
+ssh -p 2222 fujinosuke@126.217.45.148
+パスワード: ***REMOVED***
+
+## 🔧 自動パスワード接続（推奨）
+sshpass -p '***REMOVED***' ssh -p 2222 fujinosuke@126.217.45.148
+
+## 📁 接続後の移動
+cd ~/projects/
+
+## 🔄 接続テスト
+ssh -p 2222 fujinosuke@126.217.45.148 'date'
+
+## 📂 ファイルコピー
+# ローカル → MacMini2014
+scp -P 2222 ファイル名 fujinosuke@126.217.45.148:~/
+
+# MacMini2014 → ローカル
+scp -P 2222 fujinosuke@126.217.45.148:~/ファイル名 ./
+
+## 🆘 緊急時IPv6接続
+ssh fujinosuke@2400:2413:9402:db00::100
+
+## 📱 記憶すべき情報
+IPアドレス: 126.217.45.148
+ポート: 2222
+ユーザー名: fujinosuke
+パスワード: ***REMOVED***
+
+## ⌨️ よく使うコマンド
+切断: exit または Ctrl+D
+システム確認: python3 ~/projects/scripts/system_status_checker.py
+EOF < /dev/null
