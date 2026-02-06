@@ -1,0 +1,1 @@
+# Refactored Blog System v2 - Gemini AI + Claude Code Collaboration
