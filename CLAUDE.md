@@ -14,15 +14,16 @@
 
 ### メール送信方法（Pythonコード）
 ```python
+import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 
 def send_completion_report(subject, body):
-    sender_email = 'itoh@thinksblog.com'
-    sender_password = '***REMOVED***'
-    to_email = 'dice.k_itoh@softbank.ne.jp'
+    sender_email = os.environ.get('GMAIL_ADDRESS')
+    sender_password = os.environ.get('GMAIL_APP_PASSWORD')
+    to_email = os.environ.get('NOTIFICATION_EMAIL')
 
     msg = MIMEMultipart()
     msg['From'] = sender_email
