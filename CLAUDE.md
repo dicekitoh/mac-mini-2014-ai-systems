@@ -38,6 +38,11 @@ def send_completion_report(subject, body):
     server.quit()
 ```
 
+## Git運用ルール
+- **変更後は毎回プッシュすること**（portalサブモジュール → 親リポジトリの順）
+- portal: `master`ブランチ → `origin/master`
+- 親リポジトリ: `main`ブランチ → `origin/main`
+
 ## プロジェクト構成
 - ~/projects/ - メインプロジェクトディレクトリ
 - ~/scripts/ - スクリプト類
